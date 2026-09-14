@@ -1,6 +1,6 @@
 {
   "name": "@liushiyumathxjtu/minimax-statusline",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A configurable, themeable, provider-pluggable statusline for MiniMax CLI.",
   "license": "MIT",
   "author": "Liu Shiyu <liush2yuxjtu@users.noreply.github.com>",
