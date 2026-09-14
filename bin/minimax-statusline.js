@@ -6,6 +6,11 @@
 const { execFile } = require("node:child_process");
 const path = require("node:path");
 const fs = require("node:fs");
+const { createUsageFunnel } = require("../lib/usage-funnel.js");
+const { version } = require("../package.json");
+
+const funnel = createUsageFunnel("@liushiyumathxjtu/minimax-statusline", version);
+void funnel.launch();
 
 const script = path.join(__dirname, "..", "minimax-statusline.sh");
 if (!fs.existsSync(script)) {
@@ -16,4 +21,7 @@ if (!fs.existsSync(script)) {
 const child = execFile("bash", [script, ...process.argv.slice(2)], {
   stdio: ["inherit", "inherit", "inherit"],
 });
-child.on("exit", (code) => process.exit(code ?? 0));
+child.on("exit", async (code) => {
+  if (code === 0) await funnel.success();
+  process.exit(code ?? 0);
+});
