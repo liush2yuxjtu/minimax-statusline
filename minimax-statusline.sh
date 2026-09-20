@@ -50,12 +50,20 @@ esc=$'\033'
 C_RESET="${esc}[0m"
 C_BOLD="${esc}[1m"
 C_GRAY="${esc}[2;90m"
+if [ "${NO_COLOR:-}" = "1" ]; then
+  C_RESET=""
+  C_BOLD=""
+  C_GRAY=""
+fi
 
 # Bash 3.2 (macOS default) has no associative arrays, so we use a case
 # statement in `color()`. Empty / unknown names return C_RESET.
 color() {
   local name="${1:-}"
-  if [ -z "$name" ] || [ "${NO_COLOR:-}" = "1" ]; then
+  if [ "${NO_COLOR:-}" = "1" ]; then
+    return
+  fi
+  if [ -z "$name" ]; then
     printf '%s' "$C_RESET"
     return
   fi
@@ -148,7 +156,7 @@ prov = d.get("provider", {}) or {}
 mdl  = d.get("model", {}).get("context", {}) or {}
 disp = d.get("display", {}) or {}
 thr  = d.get("thresholds", {}) or {}
-lay  = d.get("layout") or ["dir","branch","effort","ctx","five_hour"]
+lay  = disp.get("layout") or d.get("layout") or ["dir","branch","effort","ctx","five_hour"]
 def emit(k, v):
     if isinstance(v, bool): print(f"CONFIG_{k}=" + ("1" if v else "0")); return
     if isinstance(v, list):  print(f"CONFIG_{k}=(" + " ".join(shlex.quote(str(x)) for x in v) + ")"); return
@@ -482,7 +490,6 @@ bar() {
 }
 
 render_five_hour() {
-  printf '%s5h:%s' "$C_BOLD" "$C_RESET"
   # Parse provider JSON
   local pct rst err stale hidden
   pct="$(printf '%s' "$provider_json" | python3 -c '
@@ -519,7 +526,7 @@ print("1" if d.get("hidden") else "")
   if [ "$hidden" = "1" ]; then
     return
   fi
-  printf ' '
+  printf '%s5h:%s ' "$C_BOLD" "$C_RESET"
   if [ -n "$err" ]; then
     case "$err" in
       no-token) c="$THEME_ERR_no_token" ;;
