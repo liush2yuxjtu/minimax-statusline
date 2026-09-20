@@ -1,3 +1,10 @@
+## 0.2.2 — 2026-09-20
+
+- Replace the package-specific usage sender with the shared `@nyn5255/telemetry@^0.1.3` SDK.
+- Use the production collector by default after explicit telemetry opt-in and privacy acknowledgement.
+- Align the funnel with `install → activated → first_success → d7_retained` plus `weekly_active`.
+- Preserve `DO_NOT_TRACK` / `PI_TELEMETRY_DISABLED` handling through the shared SDK.
+
 # 更新日志
 
 `minimax-statusline` 的所有重要变更都记录在这里。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 和 [语义化版本](https://semver.org/lang/zh-CN/spec/v2.0.0.html)。
