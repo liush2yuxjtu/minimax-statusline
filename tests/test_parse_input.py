@@ -23,6 +23,7 @@ class TestParseStdin(unittest.TestCase):
         self.assertEqual(d["cwd"], "/Users/example/projects/widget")
         self.assertEqual(d["model"], "MiniMax-M3")
         self.assertEqual(d["effort"], "high")
+        self.assertEqual(d["branch"], "main")
         self.assertEqual(d["ctx_pct"], "97")
         # 1_000_000 - (28559+68) = 971373 → "971k"
         self.assertEqual(d["ctx_toks"], "971k")
