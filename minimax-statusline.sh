@@ -26,7 +26,7 @@ set +u
 set +o pipefail
 IFS=$(printf ' \t\n')
 
-VERSION="0.2.0"
+VERSION="0.2.2"
 SCRIPT_NAME="minimax-statusline"
 SCRIPT_DIR_LIB="$(cd "$(dirname "$0")" && pwd)/lib"
 
@@ -271,7 +271,7 @@ DOCS
   See docs/ in the repo: installation.md, configuration.md,
   providers.md, themes.md.
 
-VERSION 0.1.0
+VERSION $VERSION
 EOF
   exit 0
 fi

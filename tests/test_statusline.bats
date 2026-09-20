@@ -6,7 +6,7 @@
 
 setup() {
   REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
-  SCRIPT="$REPO_ROOT/statusline.sh"
+  SCRIPT="$REPO_ROOT/minimax-statusline.sh"
   FIXTURE="$REPO_ROOT/tests/fixtures/basic.json"
   export NO_COLOR=1    # strip colors so byte-comparisons are stable
   export STATUSLINE_CONFIG=""   # disable any global config
@@ -20,10 +20,10 @@ setup() {
   export ANTHROPIC_AUTH_TOKEN="test-token-no-network"
 }
 
-@test "statusline --version prints 0.1.0" {
+@test "statusline --version prints 0.2.2" {
   run "$SCRIPT" --version
   [ "$status" -eq 0 ]
-  [[ "$output" == *"claude-statusline 0.1.0"* ]]
+  [[ "$output" == *"minimax-statusline 0.2.2"* ]]
 }
 
 @test "statusline --help mentions --doctor" {
