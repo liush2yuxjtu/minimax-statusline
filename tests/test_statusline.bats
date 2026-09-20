@@ -6,7 +6,7 @@
 
 setup() {
   REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
-  SCRIPT="$REPO_ROOT/statusline.sh"
+  SCRIPT="$REPO_ROOT/minimax-statusline.sh"
   FIXTURE="$REPO_ROOT/tests/fixtures/basic.json"
   export NO_COLOR=1    # strip colors so byte-comparisons are stable
   export STATUSLINE_CONFIG=""   # disable any global config
@@ -20,10 +20,10 @@ setup() {
   export ANTHROPIC_AUTH_TOKEN="test-token-no-network"
 }
 
-@test "statusline --version prints 0.1.0" {
+@test "statusline --version prints 0.2.2" {
   run "$SCRIPT" --version
   [ "$status" -eq 0 ]
-  [[ "$output" == *"claude-statusline 0.1.0"* ]]
+  [[ "$output" == *"minimax-statusline 0.2.2"* ]]
 }
 
 @test "statusline --help mentions --doctor" {
@@ -124,8 +124,8 @@ TOML
   # Env says minimal
   run bash -c "cat $FIXTURE | STATUSLINE_CONFIG=$STATUSLINE_CACHE_DIR/test-cfg.toml STATUSLINE_THEME=minimal $SCRIPT"
   [ "$status" -eq 0 ]
-  # minimal theme uses '@' for branch
-  [[ "$output" == *"@main"* ]]
+  # The documented minimal theme renders glyph + branch with a separating space.
+  [[ "$output" == *"@ main"* ]]
 }
 
 @test "token-redaction: debug log does not contain the token" {

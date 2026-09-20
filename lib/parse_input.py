@@ -50,6 +50,7 @@ def parse_stdin(text: str) -> dict:
             "effort": "default",
             "ctx_pct": "",
             "ctx_toks": "",
+            "branch": "",
         }
     ws = d.get("workspace")
     if isinstance(ws, dict):
@@ -72,6 +73,7 @@ def parse_stdin(text: str) -> dict:
             or _first(d, "effort_level", "thinking_effort", "reasoning_effort")
             or "default"
         )
+    branch = _first(d, "branch", "git_branch", "current_branch")
     ctx_pct = ""
     ctx_toks = ""
     cw = d.get("context_window")
@@ -127,6 +129,7 @@ def parse_stdin(text: str) -> dict:
         "effort": effort or "default",
         "ctx_pct": ctx_pct,
         "ctx_toks": ctx_toks,
+        "branch": branch,
     }
 
 
@@ -194,7 +197,7 @@ def git_branch(cwd: str) -> str:
 def main() -> int:
     text = sys.stdin.read() if not sys.stdin.isatty() else ""
     parsed = parse_stdin(text)
-    branch = git_branch(parsed["cwd"])
+    branch = parsed.get("branch") or git_branch(parsed["cwd"])
     out = SEP.join([
         parsed["cwd"],
         parsed["model"],
