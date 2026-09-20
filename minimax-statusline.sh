@@ -375,7 +375,7 @@ fi
 
 parse_out="$(printf '%s' "$input" | python3 "$(script_dir)/lib/parse_input.py" 2>/dev/null)"
 [ -z "$parse_out" ] && parse_out="$(printf '\x1e\x1e\x1e\x1e\x1e\x1e')"
-IFS=$(printf '\x1e') read -r cwd_raw model_raw effort_raw ctx_pct_raw ctx_toks_raw branch_raw <<< "$parse_out"
+IFS=$(printf '\x1e') read -r cwd_raw _model_raw effort_raw ctx_pct_raw ctx_toks_raw branch_raw <<< "$parse_out"
 
 cwd="${cwd_raw:-}"
 effort="${effort_raw:-default}"
