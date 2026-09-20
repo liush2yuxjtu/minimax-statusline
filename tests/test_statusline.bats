@@ -124,8 +124,8 @@ TOML
   # Env says minimal
   run bash -c "cat $FIXTURE | STATUSLINE_CONFIG=$STATUSLINE_CACHE_DIR/test-cfg.toml STATUSLINE_THEME=minimal $SCRIPT"
   [ "$status" -eq 0 ]
-  # minimal theme uses '@' for branch
-  [[ "$output" == *"@main"* ]]
+  # The documented minimal theme renders glyph + branch with a separating space.
+  [[ "$output" == *"@ main"* ]]
 }
 
 @test "token-redaction: debug log does not contain the token" {
