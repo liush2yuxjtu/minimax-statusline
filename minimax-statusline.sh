@@ -154,7 +154,7 @@ prov = d.get("provider", {}) or {}
 mdl  = d.get("model", {}).get("context", {}) or {}
 disp = d.get("display", {}) or {}
 thr  = d.get("thresholds", {}) or {}
-lay  = disp.get("layout") or ["dir","branch","effort","ctx","five_hour"]
+lay  = d.get("layout") or disp.get("layout") or ["dir","branch","effort","ctx","five_hour"]
 def emit(k, v):
     if isinstance(v, bool): print(f"CONFIG_{k}=" + ("1" if v else "0")); return
     if isinstance(v, list):  print(f"CONFIG_{k}=(" + " ".join(shlex.quote(str(x)) for x in v) + ")"); return

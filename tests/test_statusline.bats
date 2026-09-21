@@ -139,3 +139,18 @@ TOML
     ! grep -q "super-secret-must-not-leak-xyz" "$STATUSLINE_CACHE_DIR/debug.log"
   fi
 }
+
+@test "top-level layout overrides display layout" {
+  cat > "$STATUSLINE_CONFIG" <<'TOML'
+layout = ["ctx"]
+[provider]
+name = "none"
+[display]
+layout = ["dir", "branch"]
+TOML
+  run bash -c "cat $FIXTURE | $SCRIPT"
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"ctx:"* ]]
+  [[ "$output" != *"widget"* ]]
+  [[ "$output" != *"@ -"* ]]
+}
