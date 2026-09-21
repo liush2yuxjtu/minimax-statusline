@@ -2,6 +2,11 @@
 # Copy to ~/.config/statusline/config.toml (or set STATUSLINE_CONFIG to override)
 # All values shown are the defaults; omit a key to use the default.
 
+# ─── Layout ─────────────────────────────────────────────────────────────
+# Segments in the order you want them. Available: dir, branch, effort, ctx, five_hour.
+# Drop one to hide it. Reorder freely.
+layout = ["dir", "branch", "effort", "ctx", "five_hour"]
+
 # ─── Provider (5h / plan-usage data) ─────────────────────────────────────
 [provider]
 # Which backend to query. Built-ins: "minimax" (default, original behavior),
@@ -38,11 +43,6 @@ timeout_seconds = 5
 "sonnet-4"    = 200_000
 "haiku-4"     = 200_000
 # Add your own: "my-custom-model" = 500_000
-
-# ─── Layout ─────────────────────────────────────────────────────────────
-# Segments in the order you want them. Available: dir, branch, effort, ctx, five_hour.
-# Drop one to hide it. Reorder freely.
-layout = ["dir", "branch", "effort", "ctx", "five_hour"]
 
 # ─── Display ────────────────────────────────────────────────────────────
 [display]

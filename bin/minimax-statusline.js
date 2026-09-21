@@ -3,7 +3,7 @@
 // Lives at the bin/ entry in package.json; on `npm i -g` it ends up on PATH
 // as `minimax-statusline`. On Windows, the .cmd shim points here.
 "use strict";
-const { execFile } = require("node:child_process");
+const { spawn } = require("node:child_process");
 const path = require("node:path");
 const fs = require("node:fs");
 const { createUsageFunnel } = require("../lib/usage-funnel.js");
@@ -18,8 +18,12 @@ if (!fs.existsSync(script)) {
   process.exit(127);
 }
 
-const child = execFile("bash", [script, ...process.argv.slice(2)], {
-  stdio: ["inherit", "inherit", "inherit"],
+const child = spawn("bash", [script, ...process.argv.slice(2)], {
+  stdio: "inherit",
+});
+child.on("error", (error) => {
+  process.stderr.write(`failed to launch minimax-statusline.sh: ${error.message}\n`);
+  process.exit(127);
 });
 child.on("exit", async (code) => {
   if (code === 0) await funnel.success();

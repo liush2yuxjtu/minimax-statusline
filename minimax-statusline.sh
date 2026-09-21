@@ -26,7 +26,7 @@ set +u
 set +o pipefail
 IFS=$(printf ' \t\n')
 
-VERSION="0.2.0"
+VERSION="0.2.1"
 SCRIPT_NAME="minimax-statusline"
 SCRIPT_DIR_LIB="$(cd "$(dirname "$0")" && pwd)/lib"
 
@@ -49,15 +49,19 @@ MODEL_TABLE=()
 esc=$'\033'
 C_RESET="${esc}[0m"
 C_BOLD="${esc}[1m"
-C_DIM="${esc}[2m"
-C_FAINT="${esc}[2;37m"
 C_GRAY="${esc}[2;90m"
+
+if [ -n "${NO_COLOR:-}" ]; then
+  C_RESET=""
+  C_BOLD=""
+  C_GRAY=""
+fi
 
 # Bash 3.2 (macOS default) has no associative arrays, so we use a case
 # statement in `color()`. Empty / unknown names return C_RESET.
 color() {
   local name="${1:-}"
-  if [ -z "$name" ] || [ "${NO_COLOR:-}" = "1" ]; then
+  if [ -z "$name" ] || [ -n "${NO_COLOR:-}" ]; then
     printf '%s' "$C_RESET"
     return
   fi
@@ -150,7 +154,7 @@ prov = d.get("provider", {}) or {}
 mdl  = d.get("model", {}).get("context", {}) or {}
 disp = d.get("display", {}) or {}
 thr  = d.get("thresholds", {}) or {}
-lay  = d.get("layout") or ["dir","branch","effort","ctx","five_hour"]
+lay  = d.get("layout", disp.get("layout", ["dir","branch","effort","ctx","five_hour"]))
 def emit(k, v):
     if isinstance(v, bool): print(f"CONFIG_{k}=" + ("1" if v else "0")); return
     if isinstance(v, list):  print(f"CONFIG_{k}=(" + " ".join(shlex.quote(str(x)) for x in v) + ")"); return
@@ -186,9 +190,7 @@ print("CONFIG_MODEL_TABLE=(" + " ".join(shlex.quote(x) for x in mt) + ")")
   YELLOW_BELOW="$CONFIG_YELLOW_BELOW"
   HIGH_ICON_PCT="$CONFIG_HIGH_ICON_PCT"
   LOW_ICON_PCT="$CONFIG_LOW_ICON_PCT"
-  if [ "${#CONFIG_LAYOUT[@]}" -gt 0 ]; then
-    LAYOUT=("${CONFIG_LAYOUT[@]}")
-  fi
+  LAYOUT=("${CONFIG_LAYOUT[@]}")
   MODEL_TABLE=("${CONFIG_MODEL_TABLE[@]:-}")
 }
 
@@ -273,7 +275,7 @@ DOCS
   See docs/ in the repo: installation.md, configuration.md,
   providers.md, themes.md.
 
-VERSION 0.1.0
+VERSION 0.2.1
 EOF
   exit 0
 fi
@@ -377,10 +379,9 @@ fi
 
 parse_out="$(printf '%s' "$input" | python3 "$(script_dir)/lib/parse_input.py" 2>/dev/null)"
 [ -z "$parse_out" ] && parse_out="$(printf '\x1e\x1e\x1e\x1e\x1e\x1e')"
-IFS=$(printf '\x1e') read -r cwd_raw model_raw effort_raw ctx_pct_raw ctx_toks_raw branch_raw <<< "$parse_out"
+IFS=$(printf '\x1e') read -r cwd_raw _model_raw effort_raw ctx_pct_raw ctx_toks_raw branch_raw <<< "$parse_out"
 
 cwd="${cwd_raw:-}"
-model="${model_raw:-unknown}"
 effort="${effort_raw:-default}"
 ctx_pct="${ctx_pct_raw:-}"
 ctx_toks="${ctx_toks_raw:-}"
@@ -425,7 +426,7 @@ render_effort() {
   local eff_lower
   eff_lower="$(printf '%s' "$effort" | tr '[:upper:]' '[:lower:]')"
   local c=""
-  local label="$effort_lower"
+  local label="$eff_lower"
   case "$eff_lower" in
     ""|default|none)    c="$THEME_EFF_default"; label="default" ;;
     high|max|xhigh|extreme) c="$THEME_EFF_high";   label="$effort" ;;
@@ -485,9 +486,8 @@ bar() {
 }
 
 render_five_hour() {
-  printf '%s5h:%s' "$C_BOLD" "$C_RESET"
   # Parse provider JSON
-  local pct rst boost err stale hidden
+  local pct rst err stale hidden
   pct="$(printf '%s' "$provider_json" | python3 -c '
 import json, sys
 try: d = json.loads(sys.stdin.read())
@@ -500,12 +500,6 @@ try: d = json.loads(sys.stdin.read())
 except Exception: d = {}
 v = d.get("reset")
 print(v if v else "")
-' 2>/dev/null)"
-  boost="$(printf '%s' "$provider_json" | python3 -c '
-import json, sys
-try: d = json.loads(sys.stdin.read())
-except Exception: d = {}
-print(d.get("boost", "") if d.get("boost") else "")
 ' 2>/dev/null)"
   err="$(printf '%s' "$provider_json" | python3 -c '
 import json, sys
@@ -528,7 +522,7 @@ print("1" if d.get("hidden") else "")
   if [ "$hidden" = "1" ]; then
     return
   fi
-  printf ' '
+  printf '%s5h:%s ' "$C_BOLD" "$C_RESET"
   if [ -n "$err" ]; then
     case "$err" in
       no-token) c="$THEME_ERR_no_token" ;;
