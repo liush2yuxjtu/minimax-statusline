@@ -9,11 +9,12 @@ setup() {
   SCRIPT="$REPO_ROOT/minimax-statusline.sh"
   FIXTURE="$REPO_ROOT/tests/fixtures/basic.json"
   export NO_COLOR=1    # strip colors so byte-comparisons are stable
-  export STATUSLINE_CONFIG=""   # disable any global config
   export STATUSLINE_THEME="minimal"  # use the minimal theme (no colors)
   export STATUSLINE_CACHE_DIR="$BATS_TMPDIR/cache"
   rm -rf "$STATUSLINE_CACHE_DIR"
   mkdir -p "$STATUSLINE_CACHE_DIR"
+  export STATUSLINE_CONFIG="$STATUSLINE_CACHE_DIR/base.toml"
+  printf '[provider]\nname = "none"\n' > "$STATUSLINE_CONFIG"
   # Stub ANTHROPIC_AUTH_TOKEN to a fake value so the provider doesn't try
   # to talk to the real network (it'll fail, but that's fine — we just want
   # the script to render *something*).
@@ -49,7 +50,7 @@ setup() {
 @test "statusline --self-test renders a line from basic.json" {
   run "$SCRIPT" --self-test
   [ "$status" -eq 0 ]
-  [[ "$output" == *"@main"* || "$output" == *"main"* ]]
+  [[ "$output" == *"@ -"* ]]
   # Should mention the dir basename
   [[ "$output" == *"widget"* ]]
 }

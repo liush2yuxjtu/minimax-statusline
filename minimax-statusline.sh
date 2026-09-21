@@ -488,7 +488,6 @@ bar() {
 }
 
 render_five_hour() {
-  printf '%s5h:%s' "$C_BOLD" "$C_RESET"
   # Parse provider JSON
   local pct rst err stale hidden
   pct="$(printf '%s' "$provider_json" | python3 -c '
@@ -525,7 +524,7 @@ print("1" if d.get("hidden") else "")
   if [ "$hidden" = "1" ]; then
     return
   fi
-  printf ' '
+  printf '%s5h:%s ' "$C_BOLD" "$C_RESET"
   if [ -n "$err" ]; then
     case "$err" in
       no-token) c="$THEME_ERR_no_token" ;;
