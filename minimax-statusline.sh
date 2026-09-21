@@ -49,15 +49,11 @@ MODEL_TABLE=()
 esc=$'\033'
 C_RESET="${esc}[0m"
 C_BOLD="${esc}[1m"
-C_DIM="${esc}[2m"
-C_FAINT="${esc}[2;37m"
 C_GRAY="${esc}[2;90m"
 
 if [ -n "${NO_COLOR:-}" ]; then
   C_RESET=""
   C_BOLD=""
-  C_DIM=""
-  C_FAINT=""
   C_GRAY=""
 fi
 
@@ -385,10 +381,9 @@ fi
 
 parse_out="$(printf '%s' "$input" | python3 "$(script_dir)/lib/parse_input.py" 2>/dev/null)"
 [ -z "$parse_out" ] && parse_out="$(printf '\x1e\x1e\x1e\x1e\x1e\x1e')"
-IFS=$(printf '\x1e') read -r cwd_raw model_raw effort_raw ctx_pct_raw ctx_toks_raw branch_raw <<< "$parse_out"
+IFS=$(printf '\x1e') read -r cwd_raw _model_raw effort_raw ctx_pct_raw ctx_toks_raw branch_raw <<< "$parse_out"
 
 cwd="${cwd_raw:-}"
-model="${model_raw:-unknown}"
 effort="${effort_raw:-default}"
 ctx_pct="${ctx_pct_raw:-}"
 ctx_toks="${ctx_toks_raw:-}"
@@ -433,7 +428,7 @@ render_effort() {
   local eff_lower
   eff_lower="$(printf '%s' "$effort" | tr '[:upper:]' '[:lower:]')"
   local c=""
-  local label="$effort_lower"
+  local label="$eff_lower"
   case "$eff_lower" in
     ""|default|none)    c="$THEME_EFF_default"; label="default" ;;
     high|max|xhigh|extreme) c="$THEME_EFF_high";   label="$effort" ;;
@@ -508,12 +503,6 @@ try: d = json.loads(sys.stdin.read())
 except Exception: d = {}
 v = d.get("reset")
 print(v if v else "")
-' 2>/dev/null)"
-  boost="$(printf '%s' "$provider_json" | python3 -c '
-import json, sys
-try: d = json.loads(sys.stdin.read())
-except Exception: d = {}
-print(d.get("boost", "") if d.get("boost") else "")
 ' 2>/dev/null)"
   err="$(printf '%s' "$provider_json" | python3 -c '
 import json, sys
