@@ -154,3 +154,16 @@ TOML
   [[ "$output" != *"widget"* ]]
   [[ "$output" != *"@ -"* ]]
 }
+
+@test "explicit empty layout renders no segments" {
+  cat > "$STATUSLINE_CONFIG" <<'TOML'
+layout = []
+[provider]
+name = "none"
+[display]
+layout = ["ctx"]
+TOML
+  run bash -c "cat $FIXTURE | $SCRIPT"
+  [ "$status" -eq 0 ]
+  [ -z "$output" ]
+}

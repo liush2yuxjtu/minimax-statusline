@@ -154,7 +154,7 @@ prov = d.get("provider", {}) or {}
 mdl  = d.get("model", {}).get("context", {}) or {}
 disp = d.get("display", {}) or {}
 thr  = d.get("thresholds", {}) or {}
-lay  = d.get("layout") or disp.get("layout") or ["dir","branch","effort","ctx","five_hour"]
+lay  = d.get("layout", disp.get("layout", ["dir","branch","effort","ctx","five_hour"]))
 def emit(k, v):
     if isinstance(v, bool): print(f"CONFIG_{k}=" + ("1" if v else "0")); return
     if isinstance(v, list):  print(f"CONFIG_{k}=(" + " ".join(shlex.quote(str(x)) for x in v) + ")"); return
@@ -190,9 +190,7 @@ print("CONFIG_MODEL_TABLE=(" + " ".join(shlex.quote(x) for x in mt) + ")")
   YELLOW_BELOW="$CONFIG_YELLOW_BELOW"
   HIGH_ICON_PCT="$CONFIG_HIGH_ICON_PCT"
   LOW_ICON_PCT="$CONFIG_LOW_ICON_PCT"
-  if [ "${#CONFIG_LAYOUT[@]}" -gt 0 ]; then
-    LAYOUT=("${CONFIG_LAYOUT[@]}")
-  fi
+  LAYOUT=("${CONFIG_LAYOUT[@]}")
   MODEL_TABLE=("${CONFIG_MODEL_TABLE[@]:-}")
 }
 
