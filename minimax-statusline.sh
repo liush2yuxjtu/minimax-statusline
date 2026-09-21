@@ -26,7 +26,7 @@ set +u
 set +o pipefail
 IFS=$(printf ' \t\n')
 
-VERSION="0.2.0"
+VERSION="0.2.1"
 SCRIPT_NAME="minimax-statusline"
 SCRIPT_DIR_LIB="$(cd "$(dirname "$0")" && pwd)/lib"
 
@@ -53,11 +53,19 @@ C_DIM="${esc}[2m"
 C_FAINT="${esc}[2;37m"
 C_GRAY="${esc}[2;90m"
 
+if [ -n "${NO_COLOR:-}" ]; then
+  C_RESET=""
+  C_BOLD=""
+  C_DIM=""
+  C_FAINT=""
+  C_GRAY=""
+fi
+
 # Bash 3.2 (macOS default) has no associative arrays, so we use a case
 # statement in `color()`. Empty / unknown names return C_RESET.
 color() {
   local name="${1:-}"
-  if [ -z "$name" ] || [ "${NO_COLOR:-}" = "1" ]; then
+  if [ -z "$name" ] || [ -n "${NO_COLOR:-}" ]; then
     printf '%s' "$C_RESET"
     return
   fi
@@ -150,7 +158,7 @@ prov = d.get("provider", {}) or {}
 mdl  = d.get("model", {}).get("context", {}) or {}
 disp = d.get("display", {}) or {}
 thr  = d.get("thresholds", {}) or {}
-lay  = d.get("layout") or ["dir","branch","effort","ctx","five_hour"]
+lay  = disp.get("layout") or ["dir","branch","effort","ctx","five_hour"]
 def emit(k, v):
     if isinstance(v, bool): print(f"CONFIG_{k}=" + ("1" if v else "0")); return
     if isinstance(v, list):  print(f"CONFIG_{k}=(" + " ".join(shlex.quote(str(x)) for x in v) + ")"); return
@@ -273,7 +281,7 @@ DOCS
   See docs/ in the repo: installation.md, configuration.md,
   providers.md, themes.md.
 
-VERSION 0.1.0
+VERSION 0.2.1
 EOF
   exit 0
 fi

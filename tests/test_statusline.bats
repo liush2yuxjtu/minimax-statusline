@@ -1,12 +1,12 @@
 #!/usr/bin/env bats
 #
-# tests/test_statusline.bats — shell-level tests for statusline.sh.
+# tests/test_statusline.bats — shell-level tests for minimax-statusline.sh.
 # Run with:   bats tests/
 # (bats-core from https://github.com/bats-core/bats-core)
 
 setup() {
   REPO_ROOT="$(cd "$BATS_TEST_DIRNAME/.." && pwd)"
-  SCRIPT="$REPO_ROOT/statusline.sh"
+  SCRIPT="$REPO_ROOT/minimax-statusline.sh"
   FIXTURE="$REPO_ROOT/tests/fixtures/basic.json"
   export NO_COLOR=1    # strip colors so byte-comparisons are stable
   export STATUSLINE_CONFIG=""   # disable any global config
@@ -20,10 +20,10 @@ setup() {
   export ANTHROPIC_AUTH_TOKEN="test-token-no-network"
 }
 
-@test "statusline --version prints 0.1.0" {
+@test "statusline --version prints 0.2.1" {
   run "$SCRIPT" --version
   [ "$status" -eq 0 ]
-  [[ "$output" == *"claude-statusline 0.1.0"* ]]
+  [[ "$output" == *"minimax-statusline 0.2.1"* ]]
 }
 
 @test "statusline --help mentions --doctor" {
@@ -107,7 +107,7 @@ TOML
   run bash -c "cat $FIXTURE | STATUSLINE_CONFIG=$STATUSLINE_CACHE_DIR/test-cfg.toml $SCRIPT"
   [ "$status" -eq 0 ]
   [[ "$output" == *"widget"* ]]
-  [[ "$output" == *"main"* ]]
+  [[ "$output" == *"@ -"* ]]
   [[ "$output" == *"effort=high"* ]]
   [[ "$output" == *"ctx:"* ]]
   [[ "$output" != *"5h:"* ]]
@@ -124,8 +124,8 @@ TOML
   # Env says minimal
   run bash -c "cat $FIXTURE | STATUSLINE_CONFIG=$STATUSLINE_CACHE_DIR/test-cfg.toml STATUSLINE_THEME=minimal $SCRIPT"
   [ "$status" -eq 0 ]
-  # minimal theme uses '@' for branch
-  [[ "$output" == *"@main"* ]]
+  # minimal theme uses '@' for branch; fixture path is intentionally not a Git checkout.
+  [[ "$output" == *"@ -"* ]]
 }
 
 @test "token-redaction: debug log does not contain the token" {

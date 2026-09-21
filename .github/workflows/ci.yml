@@ -35,7 +35,7 @@ jobs:
 
       - name: Run shellcheck
         run: |
-          shellcheck statusline.sh install.sh uninstall.sh
+          shellcheck minimax-statusline.sh install.sh uninstall.sh
 
       - name: Run bats
         run: bats tests/
