@@ -490,7 +490,7 @@ bar() {
 render_five_hour() {
   printf '%s5h:%s' "$C_BOLD" "$C_RESET"
   # Parse provider JSON
-  local pct rst boost err stale hidden
+  local pct rst err stale hidden
   pct="$(printf '%s' "$provider_json" | python3 -c '
 import json, sys
 try: d = json.loads(sys.stdin.read())
